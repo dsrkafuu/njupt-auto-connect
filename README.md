@@ -61,4 +61,6 @@ A: 没有，不需要。
 
 This project and all contributors shall not be responsible for any dispute or loss caused by using this project.
 
-This project is released under the `Mozilla Public License 2.0`, for more information read the [License](https://github.com/dsrkafuu/njupt-auto-connect/blob/master/LICENSE).
+This project is released under the `MIT License`, for more information read the [LICENSE](https://github.com/dsrkafuu/njupt-auto-connect/blob/master/LICENSE).
+
+Check [Node.js repo](https://github.com/nodejs/node/blob/master/LICENSE) for LICENSE of embedded Node.js environment.
