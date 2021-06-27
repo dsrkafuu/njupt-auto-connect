@@ -23,15 +23,21 @@ npm start
 
 初次运行时，工具会提示选择默认 AP，默认状态下 (什么都不输入) 的 AP 为 `NJUPT-CHINANET`，也即电信宽带。
 
-注意无论是有线还是无线连接都是支持的，但需要选择正确的 AP。
-
 随后工具会要求提供用户名和密码，用户名将被明文保存，密码将以 Base64 编码保存：
+
+![](https://raw.githubusercontent.com/dsrkafuu/njupt-auto-connect/main/assets/init.jpg)
+
+注意无论是有线还是无线连接都是支持的，但需要选择正确的 AP。
 
 设置完成后，工具会将当前的配置文件写入用户目录，在 Windows 下为 `C:\Users\<USERNAME>\.nac.json`，Linux 下则为 `/home/<USERNAME>/.nac.json`。
 
 完成初始化后，工具会持续监控当前网络状态，并在断连时自动登录。
 
+![](https://raw.githubusercontent.com/dsrkafuu/njupt-auto-connect/main/assets/disconnected.jpg)
+
 第二次及之后运行时，工具会检查是否依旧登录，若无网络连接则尝试自动登录：
+
+![](https://raw.githubusercontent.com/dsrkafuu/njupt-auto-connect/main/assets/rerun.jpg)
 
 ## Q&A
 
