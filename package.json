@@ -1,6 +1,6 @@
 {
   "name": "njupt-auto-connect",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Auto connect/reconnect to NJUPT's idiot campus network.",
   "author": "DSRKafuU <dsrkafuu@outlook.com> (https://dsrkafuu.su)",
   "keywords": [
