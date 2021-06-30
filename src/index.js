@@ -15,7 +15,8 @@ async function main() {
     const peformLogin = async () => {
       const ret = await login(cfg.ap, cfg.username, cfg.password);
       if (!ret.status) {
-        logger.error(`Login failed retry after 10s, reason: ${ret.message}`);
+        logger.log(`Login failed retry after 10s, reason: ${ret.message}`);
+        timeout && clearTimeout(timeout);
         timeout = setTimeout(() => peformLogin(), 10000);
       }
     };
