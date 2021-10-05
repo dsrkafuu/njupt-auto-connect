@@ -1,6 +1,6 @@
 {
   "name": "njupt-auto-connect",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Auto connect/reconnect to NJUPT's idiot campus network.",
   "author": "DSRKafuU <dsrkafuu@outlook.com> (https://dsrkafuu.su)",
   "keywords": [
@@ -20,7 +20,7 @@
     "build": "pkg . --compress GZip"
   },
   "dependencies": {
-    "axios": "^0.21.4",
+    "axios": "^0.22.0",
     "chalk": "^4.1.2",
     "dayjs": "^1.10.7",
     "is-online": "^9.0.1",
@@ -28,7 +28,7 @@
     "systeminformation": "^5.9.4"
   },
   "devDependencies": {
-    "pkg": "^5.3.2"
+    "pkg": "^5.3.3"
   },
   "pkg": {
     "targets": [

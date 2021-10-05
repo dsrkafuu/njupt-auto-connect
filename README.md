@@ -2,7 +2,7 @@
 
 用于自动登录连接/重连南京邮电大学校园网的工具。难以忍受打游戏断连还得切到路由器联网的麻烦，用半小时糊了这个快速登录南邮校园网的工具。
 
-可在任何 Node 14 以上的环境跑，OpenWRT 和 Padavan 用 opkg 安装 Node 和 NPM 即可。
+可在任何 Node 14 以上的环境跑，OpenWRT 和 Padavan 用 opkg 安装 Node 和 NPM 即可。程序只会执行一次，请使用 Linux 原生或 PM2 的 Cron 来定时运行，建议 5-10 秒一次。
 
 ## 安装
 
@@ -31,11 +31,11 @@ npm start
 
 设置完成后，工具会将当前的配置文件写入用户目录，在 Windows 下为 `C:\Users\<USERNAME>\.nac.json`，Linux 下则为 `/home/<USERNAME>/.nac.json`。
 
-完成初始化后，工具会持续监控当前网络状态，并在断连时自动登录。
+完成初始化后，工具会自动登录：
 
 ![](https://raw.githubusercontent.com/dsrkafuu/njupt-auto-connect/main/assets/disconnected.jpg)
 
-第二次及之后运行时，工具会检查是否依旧登录，若无网络连接则尝试自动登录：
+第二次及之后运行时，工具会检查网络情况，若无网络连接则尝试自动登录：
 
 ![](https://raw.githubusercontent.com/dsrkafuu/njupt-auto-connect/main/assets/rerun.jpg)
 

@@ -23,6 +23,7 @@ pids
 
 # dependency directories
 package-lock.json
+pnpm-lock.yaml
 .npm/
 .pnpm-store/
 node_modules/
