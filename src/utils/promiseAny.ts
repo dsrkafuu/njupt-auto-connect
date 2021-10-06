@@ -1,9 +1,7 @@
 /**
  * polyfill for `Promise.any` before node 15
- * @param {string} promises
- * @returns
  */
-function promiseAny(promises) {
+function promiseAny(promises: Promise<any>[] = []) {
   return new Promise((resolve, reject) => {
     promises = Array.isArray(promises) ? promises : [];
 
@@ -11,7 +9,7 @@ function promiseAny(promises) {
     if (len === 0) {
       return reject(new Error('All promises were rejected'));
     }
-    let errs = [];
+    let errs: any[] = [];
 
     promises.forEach((promise) => {
       promise.then(
@@ -28,4 +26,4 @@ function promiseAny(promises) {
   });
 }
 
-module.exports = promiseAny;
+export default promiseAny;

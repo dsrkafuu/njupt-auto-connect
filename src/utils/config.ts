@@ -1,35 +1,34 @@
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const readline = require('readline');
-const chalk = require('chalk');
-const logger = require('./logger');
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import readline from 'readline';
+import chalk from 'chalk';
+import * as logger from './logger';
 
-/**
- * @typedef {{
- *  ap: 'NJUPT'|'NJUPT-CHINANET'|'NJUPT-CMCC',
- *  username: string,
- *  password: string,
- *  interval: number,
- *  timeout: number,
- * }} Config
- */
-const defaultConfig = {
+export type APName = 'NJUPT' | 'NJUPT-CHINANET' | 'NJUPT-CMCC';
+
+export interface Config {
+  ap: APName;
+  username: string;
+  password: string;
+  timeout: number;
+}
+
+export const CONFIG_DEFAULT: Config = {
   ap: 'NJUPT-CHINANET',
   username: '',
   password: '',
-  interval: 5000, // connection check interval
-  timeout: 5000, // http fetch timeout
+  timeout: 3000, // http fetch timeout
 };
+
+export const CONFIG_PATH = path.join(os.homedir(), '.nac.json');
 
 /**
  * check config init status
- * @param {string} url config file path
- * @returns {Promise<Config>}
  */
-async function init(url) {
+export async function init(): Promise<Config> {
   logger.log('Seems first running, init configs...');
-  const config = { ...defaultConfig };
+  const config: Config = { ...CONFIG_DEFAULT };
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -41,7 +40,7 @@ async function init(url) {
     logger.log(`  ${chalk.cyan('2')}. NJUPT-CHINANET (Default)`);
     logger.log(`  ${chalk.cyan('3')}. NJUPT-CMCC`);
     rl.question(`${logger.getPrefix()} Please select default ${chalk.cyan('AP')}: `, (s) => {
-      switch (Math.floor(`${s}`.trim())) {
+      switch (Math.floor(Number(`${s}`.trim()))) {
         case 1:
           resolve('NJUPT');
           break;
@@ -71,48 +70,44 @@ async function init(url) {
   });
 
   try {
-    fs.writeFileSync(url, JSON.stringify(config, null, 2));
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
     logger.log(`Config file ${chalk.cyan('`.nac.json`')} saved in user homedir`);
     return config;
   } catch (e) {
     logger.error('Failed to init config file');
     logger.save(e);
-    return defaultConfig;
+    return CONFIG_DEFAULT;
   }
 }
 
 /**
  * load or init config file
- * @returns {Promise<Config>}
  */
-async function load() {
+export async function load(): Promise<Config> {
   logger.log('Checking config file...');
-  const url = path.join(os.homedir(), '.nac.json');
 
   let config = null;
-  if (!fs.existsSync(url)) {
-    const inited = await init(url);
-    config = { ...defaultConfig, ...inited };
+  if (!fs.existsSync(CONFIG_PATH)) {
+    const inited = await init();
+    config = { ...CONFIG_DEFAULT, ...inited };
   } else {
     try {
-      const loaded = JSON.parse(fs.readFileSync(url));
-      config = { ...defaultConfig, ...loaded };
+      const loaded = JSON.parse(fs.readFileSync(CONFIG_PATH, { encoding: 'utf-8' }));
+      config = { ...CONFIG_DEFAULT, ...loaded };
       logger.log('Successfully loaded config file');
     } catch (e) {
       logger.error('Failed to load config file');
       logger.save(e);
-      config = defaultConfig;
+      config = CONFIG_DEFAULT;
     }
   }
 
   // re-check config
   if (!/^NJUPT(-CHINANET|-CMCC)?$/.exec(config.ap)) {
-    config.ap = defaultConfig.ap;
+    config.ap = CONFIG_DEFAULT.ap;
   }
   // decode password
   config.password = Buffer.from(config.password, 'base64').toString('utf-8');
-  // min interval set to 5000
-  config.interval = config.interval < 5000 ? 5000 : Math.floor(config.interval);
   // timeout from min 1000 to max interval
   config.timeout = config.timeout >= 1000 ? Math.floor(config.timeout) : 1000;
   if (config.timeout > config.interval) {
@@ -122,12 +117,6 @@ async function load() {
   logger.log(`  AP:       ${chalk.cyan(config.ap)}`);
   logger.log(`  Username: ${chalk.cyan(config.username)}`);
   logger.log(`  Username: ${chalk.cyan(config.password.replace(/./g, '*'))}`);
-  logger.log(`  Interval: ${chalk.cyan(config.interval + 'ms')}`);
   logger.log(`  Timeout:  ${chalk.cyan(config.timeout + 'ms')}`);
   return config;
 }
-
-module.exports = {
-  init,
-  load,
-};

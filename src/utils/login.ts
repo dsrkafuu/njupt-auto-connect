@@ -1,24 +1,38 @@
-const axios = require('axios').default;
-const qs = require('qs');
-const logger = require('./logger');
-const promiseAny = require('./promiseAny');
+import axios, { AxiosResponse } from 'axios';
+import qs from 'qs';
+import { Config } from './config';
+import * as logger from './logger';
+import promiseAny from './promiseAny';
 
-const TIMEOUT = 5000;
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0';
 const HOSTS = ['p.njupt.edu.cn', '10.10.244.11'];
 
+interface LoginData {
+  ip: string;
+  wlanuserip: string;
+  wlanacname: string;
+  wlanacip: string;
+}
+
 /**
- * @param {string} ap
- * @param {string} username
- * @param {string} password
+ * perform login
  */
-async function login(ap, username, password) {
+async function login(cfg: Config): Promise<{
+  status: boolean;
+  message?: string;
+}> {
+  let { ap, username, password, timeout } = cfg;
   const ret = {
     status: false,
     message: '',
   };
   let res = null;
-  let data = {};
+  let data: LoginData = {
+    ip: '',
+    wlanuserip: '',
+    wlanacname: '',
+    wlanacip: '',
+  };
 
   // check inputs
   if (!username || !password) {
@@ -44,19 +58,17 @@ async function login(ap, username, password) {
 
   // init login params
   try {
-    res = await axios.get('http://6.6.6.6', {
-      timeout: TIMEOUT,
-    });
-    const href = /location\.href="([^"]+)"/.exec(res.data)[1];
+    res = await axios.get('http://6.6.6.6', { timeout });
+    const href = (/location\.href="([^"]+)"/.exec(res.data) || [])[1] || '';
 
     const url = new URL(href);
     data = {
       ...data,
       ...{
-        wlanuserip: url.searchParams.get('wlanuserip'),
-        ip: url.searchParams.get('wlanuserip'),
-        wlanacname: url.searchParams.get('wlanacname'),
-        wlanacip: url.searchParams.get('wlanacip'),
+        wlanuserip: url.searchParams.get('wlanuserip') || '',
+        ip: url.searchParams.get('wlanuserip') || '',
+        wlanacname: url.searchParams.get('wlanacname') || '',
+        wlanacip: url.searchParams.get('wlanacip') || '',
       },
     };
     if (!data.wlanuserip || !data.wlanacip) {
@@ -84,7 +96,7 @@ async function login(ap, username, password) {
   };
 
   // proceed login
-  const workers = [];
+  const workers: Promise<AxiosResponse>[] = [];
   const body = qs.stringify({
     DDDDD: username,
     upass: password,
@@ -108,12 +120,12 @@ async function login(ap, username, password) {
   HOSTS.forEach((hostname) => {
     const url = new URL(`http://${hostname}:801/eportal/`);
     for (let key of Object.keys(data)) {
-      url.searchParams.set(key, data[key]);
+      url.searchParams.set(key, data[key as keyof LoginData]);
     }
     url.searchParams.set('hostname', hostname);
     workers.push(
       axios.post(url.toString(), body, {
-        timeout: TIMEOUT,
+        timeout,
         headers: {
           Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
           'Accept-Encoding': 'gzip, deflate',
@@ -144,4 +156,4 @@ async function login(ap, username, password) {
   }
 }
 
-module.exports = login;
+export default login;

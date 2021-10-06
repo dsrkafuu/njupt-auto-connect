@@ -13,11 +13,12 @@
   "homepage": "https://github.com/dsrkafuu/njupt-auto-reconnect#readme",
   "license": "MIT",
   "repository": "github:dsrkafuu/njupt-auto-reconnect",
-  "main": "src/index.js",
-  "bin": "src/index.js",
+  "main": "./dist/index.js",
+  "bin": "./dist/index.js",
   "scripts": {
     "start": "node ./src/index.js",
-    "build": "pkg . --compress GZip"
+    "build": "tsc",
+    "pkg": "pkg . --compress GZip"
   },
   "dependencies": {
     "axios": "^0.22.0",
@@ -28,7 +29,9 @@
     "systeminformation": "^5.9.4"
   },
   "devDependencies": {
-    "pkg": "^5.3.3"
+    "@types/qs": "^6.9.7",
+    "pkg": "^5.3.3",
+    "typescript": "^4.4.3"
   },
   "pkg": {
     "targets": [
@@ -36,6 +39,6 @@
       "node14-linux-x64",
       "node14-macos-x64"
     ],
-    "outputPath": "dist"
+    "outputPath": "pkg"
   }
 }
