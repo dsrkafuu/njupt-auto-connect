@@ -79,7 +79,6 @@ while :; do
     login
     if [ $? -eq 0 ]; then
       echo "$LOG_PREFIX LOGIN FAILED"
-      exit 1
     else
       echo "$LOG_PREFIX LOGIN SUCCEEDED"
     fi
