@@ -5,6 +5,7 @@ if [ ! -n "$1" ] || [ ! -n "$2" ]; then
   echo 'USAGE: $0 <用户名> <密码> [间隔] [超时]'
   exit 1
 fi
+
 USERNAME=$1 # 视情况在用户名后添加 @njxy (电信) 或 @cmcc (移动)
 PASSWORD=$2
 INTERVAL=10
@@ -16,14 +17,34 @@ if [ -n "$4" ]; then
   TIMEOUT=$4
 fi
 
+# 检查系统
+SYSTEM="linux" # linux, windows, macos
+
+MINGW="$(uname -s | grep -i 'MINGW')"
+CYGWIN="$(uname -s | grep -i 'CYGWIN')"
+if [ -n "$MINGW" ] || [ -n "$CYGWIN" ]; then
+  SYSTEM="windows"
+fi
+
+DARWIN="$(uname -s | grep -i 'DARWIN')"
+if [ -n "$DARWIN" ]; then
+  SYSTEM="macos"
+fi
+
 # 检查在线状态
 online() {
-  # 苹果
-  ping -c 1 -w "$TIMEOUT" 'www.apple.com' >'/dev/null' 2>&1
-  A_STAT=$?
-  # 百度
-  ping -c 1 -w "$TIMEOUT" 'www.baidu.com' >'/dev/null' 2>&1
-  B_STAT=$?
+  if [ "$SYSTEM" = "windows" ]; then
+    ping -n 1 -w "$TIMEOUT" 'www.apple.com' >'/dev/null' 2>&1 # 苹果
+    A_STAT=$?
+    ping -n 1 -w "$TIMEOUT" 'www.baidu.com' >'/dev/null' 2>&1 # 百度
+    B_STAT=$?
+  else
+    ping -c 1 -w "$TIMEOUT" 'www.apple.com' >'/dev/null' 2>&1 # 苹果
+    A_STAT=$?
+    ping -c 1 -w "$TIMEOUT" 'www.baidu.com' >'/dev/null' 2>&1 # 百度
+    B_STAT=$?
+  fi
+
   # 任意可行即在线
   if [ $A_STAT -eq 0 ] || [ $B_STAT -eq 0 ]; then
     return 1
